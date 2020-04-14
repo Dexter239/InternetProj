@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Main</title>
+</head>
+<script>
+    function search_user(search_input) {
+        $.ajax({
+            type: "GET",
+            url: "/search_user/",
+            dataType: "html",
+            data: {'username': search_input.value},
+            success: function (data) {
+              users = document.getElementById("users");
+              if (data)
+              users.innerHTML = data;
+              else
+                 users.innerHTML = "<p>Ничего не найдено!</p>";
+            }
+        })
+    }
+</script>
+<body>
+<div>
+<a href="">История</a> <a href="/logout/">Выход</a> Поиск пользователей: <input type="text" onkeyup="search_user(this)">
+<p>Welcome, {{ user.username }}!</p>
+    </div>
+<p>Найденные пользователи:</p>
+<div id="users">
+</div>
+</body>
+</html>
