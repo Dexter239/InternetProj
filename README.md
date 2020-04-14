@@ -6,4 +6,4 @@
 Ксения Миронова - frontend разработчик, web-дизайнер<br>
 Анна Рослякова - frontend разработчик, дизайнер мобильных приложений<br>
 Текущий чек-лист проекта:<br>
-https://docs.google.com/spreadsheets/d/1h49uEmKwPTBKiXpwkRpMFN_725loeLRwnc7UVSvYLbY/edit?usp=sharing
+<a targer="_blank" href="https://docs.google.com/spreadsheets/d/1h49uEmKwPTBKiXpwkRpMFN_725loeLRwnc7UVSvYLbY/edit?usp=sharing">Чек-лист</a>
