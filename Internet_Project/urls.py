@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from filesender.views import index, RegisterFormView, LoginFormView, user_logout, main_view, search_friends
+from filesender.views import index, RegisterFormView, LoginFormView, user_logout, main_view, search_friends, user_page, change_rights, notification_center, add_to_friend, download, download_file
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +27,12 @@ urlpatterns = [
     path('logout/', user_logout),
     path('main/', main_view),
     path('search_user/', search_friends),
+    path('user/<int:user_id>/', user_page),
+    path('change_rights/', change_rights),
+    path('notifications/', notification_center),
+    path('add_to_friend/<int:user_id>/', add_to_friend),
+    path('download_file/<int:user_id>/', download),
+    path('file/<str:file_id>/<str:action>/', download_file),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

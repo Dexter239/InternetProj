@@ -9,6 +9,11 @@ class Profile(models.Model):
     friends = models.ManyToManyField('self')
 
 
+class Notifications(models.Model):
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    notify = models.CharField(max_length=500)
+
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

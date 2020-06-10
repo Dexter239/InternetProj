@@ -20,6 +20,7 @@
 </head>
 <script>
     function search_user(search_input) {
+
         $.ajax({
             type: "GET",
             url: "/search_user/",
@@ -30,7 +31,32 @@
               if (data)
               users.innerHTML = data;
               else
-                 users.innerHTML = "<li class=\"nav-item\">Ничего не найдено!</li>";
+                 users.innerHTML = "<p>Ничего не найдено!</p>";
+            }
+        })
+    }
+    function allow_send() {
+        $.ajax({
+            type: "POST",
+            url: "/change_rights/",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            dataType: "html",
+            data: {'userID': {{  user.id }} , 'rights': 'allow'},
+            success: function (data) {
+             location.reload()
+            }
+        })
+    }
+
+    function decline_send() {
+        $.ajax({
+            type: "POST",
+            url: "/change_rights/",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            dataType: "html",
+            data: {'userID': {{  user.id }} , 'rights': 'decline'},
+            success: function (data) {
+             location.reload()
             }
         })
     }
@@ -41,22 +67,20 @@
             url: "/notifications/",
              headers: { "X-CSRFToken": "{{ csrf_token }}" },
             dataType: "html",
-            data: {'userID': {{ user.id }},'action': 'remove'},
+            data: {'userID': {{ myself.id }},'action': 'remove'},
             success: function (data) {
                 contentLength=data.length;
                 $('.modal-body').html(data);
             }
         })
     }
-
-    function update(){
-
+     function update(){
         $.ajax({
             type: "POST",
             url: "/notifications/",
              headers: { "X-CSRFToken": "{{ csrf_token }}" },
             dataType: "html",
-            data: {'userID': {{ user.id }},'action': 'update'},
+            data: {'userID': {{ myself.id }},'action': 'update'},
             success: function (data) {
                 if (data.length>contentLength) {
                     bell = $('.fa-bell-o');
@@ -70,7 +94,7 @@
         })
     }
     $( document ).ready(function() {
-    let timerID = setInterval(update, 7000)
+    let timerID = setInterval(update,7000)
 });
 </script>
 <body>
@@ -92,7 +116,7 @@
                   <div id="notifications" style="margin-right: 10px"><i onmouseover="" style="cursor: pointer;"  data-toggle="modal" data-target="#shownotifications" class="fa fa-bell-o fa-2" onclick="$(this).removeClass('fa-bell'); $(this).addClass('fa-bell-o');" aria-hidden="true"></i></div>
                     <ul class="navbar-nav ml-auto">
                     <li class="nav-item active">
-                      <a class="nav-link">{{user.username}} <span class="sr-only">(current)</span></a>
+                      <a class="nav-link">{{myself.username}} <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item active">
                       <a class="nav-link" href="/logout/">Выход <span class="sr-only">(current)</span></a>
@@ -104,19 +128,32 @@
         </div>
         <div class="main">
             <div>
-            <p class="text-center" style="padding-top: 10%; font-family: inherit; font-size: 40px;">Добро пожаловать, {{ user.username }}!</p>
+            <p class="text-center" style="padding-top: 10%; font-family: inherit; font-size: 40px;">Профиль {{ user.username }}</p>
             </div>
-
-            <div class="text-center">
-                <p>Вот список ваших друзей:</p>
-            {% if user.profile.friends.all %}
-                {% for item in user.profile.friends.all %}
-                <p><span><a class="link" style="text-decoration: none; cursor: pointer; color: black" onmouseout="this.style.color = 'black'" onmouseover="this.style.color = ' darkslategray'" href="/user/{{ item.user.id }}/">{{ item.user.username }}</a></span></p>
-                {% endfor %}
-            {% else %}
-            <p>Сейчас у вас нет друзей.</p>
+        <div class="text-center">
+         {% if user.profile in myself.profile.friends.all %}
+                <button class="btn btn-secondary" onclick="decline_send()">Удалить пользователя из друзей</button>
+                {% else %}
+                <button class="btn  btn-secondary" onclick="allow_send()">Добавить пользователя в друзья</button>
             {% endif %}
+            <div class="d-flex justify-content-center" style="margin-top: 10%; padding-bottom: 10%;">
+                {% if myself.profile in user.profile.friends.all %}
+            <form class="custom-file" style="width: 70%" id="file" action="/download_file/{{ user.id }}/" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                <div  id="customFile" lang="es">
+                    <input name="file" type="file" class="custom-file-input" id="fileinput"
+                      aria-describedby="filehelp" onchange="send_form.click()">
+                    <label class="custom-file-label" style="text-align: left" for="fileinput">Выберите файл</label>
+                    <input type="submit" id="send_form" name="send_form" hidden>
+                </div>
+                </form>
+
+                 {% else %}
+                <p>Пользователь не разрешал вам отправлять файлы</p>
+                {% endif %}
+</div>
             </div>
+        </div>
         <div class="footer"></div>
     </div>
  <div class="modal fade" id="shownotifications"  tabindex="-1" role="dialog" aria-labelledby="notificationsLabel" aria-hidden="true">
